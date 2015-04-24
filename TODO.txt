@@ -1,0 +1,11 @@
+TO DO
+----------
+Tentative/Reoccuring
+	[x]Tweak throttle setting for each menu
+	[x]Verify resetting game (start game then quit to main menu)
+	[x]Verify application closing
+Misc
+	[]Subversion
+	[]Player Rotation
+	[]Player Animations
+	[]Blog Post
