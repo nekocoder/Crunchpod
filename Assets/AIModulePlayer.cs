@@ -4,10 +4,11 @@ using System.Collections;
 public class AIModulePlayer : MonoBehaviour 
 {
 	//variable
-		public float[] speed=new float[2];
-		public bool seeking;
-		public Vector3 target= new Vector3();	
-		public float[] limits = new float[4];
+		public float[] speed=new float[2];		//movement speed
+		public bool seeking;					//Should the player be moving?
+		public Vector3 target= new Vector3();	//Position to move to 
+		public float[] limits = new float[4];	//Space player is allowed to move within
+		public float[] rotation = new float[3];	//angle rotated, x component of forward vector, y component of forward vector
 
 	// Use this for initialization
 	void Start () 
@@ -19,6 +20,10 @@ public class AIModulePlayer : MonoBehaviour
 	{
 		speed [0] = (float)1;
 		speed [1] = (float)1;
+		
+		rotation[0] = 0;
+		rotation[1] = 1;
+		rotation[2] = 0;
 
 		seeking = false;
 
@@ -49,26 +54,83 @@ public class AIModulePlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-	
 		checkInput ();
 		createCoordinates ();
+		createForwardVector();
 		checkBoundaries ();
 	
+		//debug output statements
+			//print("AIModulePlayer update");
 	}
 
 	void checkInput()
 	{
-		if (Input.GetAxis ("Horizontal") != 0 || Input.GetAxis ("Vertical") != 0) 
-		{
-			seeking=true;
-		}
+		//set seeking to true if the thumbstick is not at defualt position. Set false otherwise
+			if (Input.GetAxis ("Horizontal") != 0 || Input.GetAxis ("Vertical") != 0) 
+			{
+				seeking=true;
+			}
+			else
+			{
+				seeking=false;
+			}
+			
+		//debug output statements
+			//print("Intput:  H: "+Input.GetAxis ("Horizontal")+" V: "+Input.GetAxis ("Vertical")+" Seeking: "+seeking);
 	}
+	
+	void createForwardVector()
+	{
+		//Grab animator object
+			Animator animator= GetComponent<Animator>();
+		
+		//Don't bother with calculating and changing rotation if the thumbstick isn't being moved		
+			if(seeking)
+			{
+				float[] jsp = new float[4]; //joyStickPositions
+				jsp [0] = Input.GetAxis ("Horizontal");
+				jsp [1] = Input.GetAxis ("Vertical");
+				jsp [2] = Input.GetAxis ("Target Horizontal");
+				jsp [3] = Input.GetAxis ("Target Vertical");
+				
+				//flip vertical reading*
+				//*range is 1 < y < -1; should be -1 < y < 1
+					jsp[1] *= -1;
+				
+				//get theta sub 
+					//float theta=Mathf.Atan(jsp[1]/jsp[0]) * Mathf.Rad2Deg;
+					float theta=Mathf.Atan2(jsp[1],jsp[0]) * Mathf.Rad2Deg;
+					
+				//adjust accordingly
+					if(theta<0)
+					{
+						theta+=360;
+					}
+				
+				//document rotation and slope
+					rotation[0]= theta;
+					rotation[1]= jsp[0];
+					rotation[2]= jsp[1];
+					
+				//Debug Output Statements	
+					//print ("distiled: "+jsp[0]+"/"+jsp[1]+"/"+jsp[2]+"/"+jsp[3]);
+					//print ("rotations: "+rotations[0]+"..."+rotations[1]);
+					//print ("rotations: " + (Mathf.Rad2Deg * Mathf.Acos (jsp [0]))+"...."+(Mathf.Rad2Deg* Mathf.Asin(jsp[1])));
+					//print("Quad: "+quad);
+					//print("Rotation: "+theta);				
+			}
+			
+			//Change booster flag in animator
+				animator.SetBool("Boosters",seeking);			
+		
+	}
+	
 	void createCoordinates()
 	{
 		target = new Vector3 (this.rigidbody2D.transform.position.x + (speed [0]*Input.GetAxis("Horizontal")),
 		                      this.rigidbody2D.transform.position.y - (speed [1]*Input.GetAxis("Vertical")),
 		                      this.rigidbody2D.transform.position.z);
-	}
+	}	
 	void checkBoundaries()
 	{
 		//check to make sure we're not out of bounds

@@ -5,7 +5,7 @@ public class logicUnit : MonoBehaviour {
 
 	//variables
 	bool[] moving = new bool[4];
-	float[] rotations = new float[2];
+	float[] rotations = new float[3];
 	float[] speed= new float[2];
 
 	// Use this for initialization
@@ -38,7 +38,7 @@ public class logicUnit : MonoBehaviour {
 			//update variables
 
 			//update rotations
-				calcRotation ();
+				UpdateRotation ();
 			//update position
 				move ();
 			//check for and fix boundary collisions
@@ -63,30 +63,25 @@ public class logicUnit : MonoBehaviour {
 
 	}
 //calculation methonds
-	void calcRotation()
+	void UpdateRotation()
 	{
-		float[] jsp = new float[4]; //joyStickPositions
-		jsp [0] = Input.GetAxis ("Horizontal");
-		jsp [1] = Input.GetAxis ("Vertical");
-		jsp [2] = Input.GetAxis ("Target Horizontal");
-		jsp [3] = Input.GetAxis ("Target Vertical");
+		//check to see if the PC is even trying to move. 
+		//no point
+			bool seeking= this.GetComponent<AIModulePlayer>().seeking;
+		
+		//Don't bother with calculating and changing rotation if the thumbstick isn't being moved		
+			if(seeking)
+			{
+				//helper variable
+					float theta =this.GetComponent<AIModulePlayer>().rotation[0];	
 
-		for(int i=0;i<jsp.Length;i++)
-		{
-			if (jsp[i] <= 0)
-				jsp[i] *= -1;
-			else
-				jsp[i]+=1;
-		}
-
-		rotations[0]= (jsp[0]*90) + (jsp[1]*90);
-		rotations[1]= (jsp[2]*90) + (jsp[3]*90);
-
-		//print ("distiled: "+jsp[0]+"/"+jsp[1]+"/"+jsp[2]+"/"+jsp[3]);
+				//move the object
+					this.rigidbody2D.MoveRotation(theta);	
+			}
 	}
 
 //modification methods
-		void move()
+	void move()
 	{
 
 		bool seeking= this.GetComponent<AIModulePlayer>().seeking;
@@ -105,4 +100,4 @@ public class logicUnit : MonoBehaviour {
 		}
 
 	}
-	}
+}
