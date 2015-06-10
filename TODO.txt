@@ -4,6 +4,11 @@ Tentative/Reoccuring
 	[x]Tweak throttle setting for each menu
 	[x]Verify resetting game (start game then quit to main menu)
 	[x]Verify application closing
+Major Errors
+	[]IsFinite(outDistanceForSort)
+	[]IsFinite(outDistanceAlongView)
+	[]aabb.IsInvalid()
+	[x]Stop booster animation when paused
 Misc
 	[x]Subversion
 	[x]Player Rotation

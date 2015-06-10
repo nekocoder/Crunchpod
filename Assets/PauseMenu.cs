@@ -38,12 +38,18 @@ public class PauseMenu : MonoBehaviour {
 				status="inactive";
 				throttle=0;
 				choice=1;
-				ShowInfo();
+				
+				//Debug Output
+					//ShowInfo();
+					
 				break;
 			case "inactive":				
 				status="active";
 				throttle=DefThrottle;
-				ShowInfo();
+				
+				//Debug Output
+					//ShowInfo();
+					
 				break;
 			default:
 				break;

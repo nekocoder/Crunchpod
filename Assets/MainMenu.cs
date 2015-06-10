@@ -34,12 +34,14 @@ public class MainMenu : MonoBehaviour {
 				status="inactive";
 				throttle=0;
 				choice=1;
-				ShowInfo();
+				//Debug Output
+					//ShowInfo();
 				break;
 			case "inactive":				
 				status="active";
 				throttle=DefThrottle;
-				ShowInfo();
+				//Debug Output
+					//ShowInfo();
 				break;
 			default:
 				break;
@@ -62,7 +64,10 @@ public class MainMenu : MonoBehaviour {
 			case 1: 
 				HitDaSwitches();
 				this.GetComponent<Protocol>().addMessage("load");
-				print("---------END main menu");
+				
+				//Debug Output
+					//print("---------END main menu");
+					
 				break;
 			//save/load
 			case 2:
@@ -223,8 +228,10 @@ public class MainMenu : MonoBehaviour {
 				
 				if((Input.GetButton("Chomp") || Input.GetKey(KeyCode.Return))&& throttle==0)
 				{
-					print("INPUT: CHOMP");
 					processChoice();
+					
+					//Debug Output
+						//print("INPUT: CHOMP");
 				}
 				if(Input.GetAxis("Vertical")>0 && throttle==0)
 				{
@@ -261,7 +268,9 @@ public class MainMenu : MonoBehaviour {
 					if(throttle>0)
 					{
 						throttle--;
-						//print(this+" frame lock: "+throttle+" frames");
+						
+						//Debug Output
+							//print(this+" frame lock: "+throttle+" frames");
 					}
 				}
 

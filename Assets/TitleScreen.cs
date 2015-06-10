@@ -26,12 +26,16 @@ public class TitleScreen : MonoBehaviour {
 			case "active":
 				status="inactive";
 				throttle=0;
-				ShowInfo();
+				
+				//Debug Output
+					//ShowInfo();
 				break;
 			case "inactive":				
 				status="active";
 				throttle=25;
-				ShowInfo();
+				
+				//Debug Output
+					//ShowInfo();
 				break;
 			default:
 				break;
@@ -165,14 +169,18 @@ public class TitleScreen : MonoBehaviour {
 					HitDaSwitches();
 					
 					this.GetComponent<Protocol>().addMessage("MainMenu");
-					print("---------END title menu ");
+					
+					//Debug Output
+						//print("---------END title menu ");
 				}
 				else
 				{
 					if(throttle>0)
 					{
-						throttle--;					
-						//print(this+" frame lock: "+throttle+" frames");
+						throttle--;
+
+						//Debug Output
+							//print(this+" frame lock: "+throttle+" frames");
 					}
 				}
 

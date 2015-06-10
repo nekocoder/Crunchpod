@@ -12,6 +12,7 @@ public class Protocol : MonoBehaviour {
 
 	//game bits
 	public Transform PC;
+	public Transform Enemy;
 
 	//SAMPLE FROM UNITY DOCUMENTATION: VIEWPOINT TO SCREEN COORDINATES
 	public Texture2D bottomPanel;
@@ -42,9 +43,9 @@ public class Protocol : MonoBehaviour {
 	{
 		if (Input.GetButton ("Menu") && state == "game" && throttle==0) 
 		{
-			print("---------PAWS");
-			print("\t Throttle: "+throttle);
-			print("\t State: "+state);
+			//print("---------PAWS");
+			//print("\t Throttle: "+throttle);
+			//print("\t State: "+state);
 			//state = "menu";
 			addMessage("PauseMenu");
 			//this.GetComponent<TitleScreen>().framePause=100;
@@ -76,13 +77,13 @@ public class Protocol : MonoBehaviour {
 			switch (actionStack [0].ToString ()) 
 			{
 				case "TitleScreen":
-					print("---------START Title Screen");
+					///print("---------START Title Screen");
 					this.GetComponent<TitleScreen> ().HitDaSwitches();	
 					state="menu";
 					break;
 				case "MainMenu":
-					print("---------START Main Menu");
-					print("Active: "+this.GetComponent<MainMenu> ().HitDaSwitches());
+					//print("---------START Main Menu");
+					this.GetComponent<MainMenu> ().HitDaSwitches();
 					state="menu";
 					break;
 				case "PauseMenu":
@@ -93,11 +94,11 @@ public class Protocol : MonoBehaviour {
 					state="freshGame";
 					break;
 				case "load":
-					print ("loading assets");
+					//print ("loading assets");
 					LoadAssets();
 					break;
 				case "unload":
-					print ("unloading assets");
+					//print ("unloading assets");
 					UnloadAssets();					
 					break;
 				default:
@@ -130,6 +131,7 @@ public class Protocol : MonoBehaviour {
 	{
 		//Instantiate(brick, Vector3 (x, y, 0), Quaternion.identity);
 			Instantiate (PC, new Vector3 (0, 0, 0), Quaternion.identity);
+			Instantiate (Enemy, new Vector3 (25, 0, 0), Quaternion.identity);
 		
 		//add a message asking for a fresh game
 			addMessage("fresh");
@@ -140,6 +142,7 @@ public class Protocol : MonoBehaviour {
 	{
 		//remove player character
 			Destroy (GameObject.FindWithTag ("Player"));
+			Destroy (GameObject.FindWithTag ("Enemy"));
 	}
 	
 	public string getState()

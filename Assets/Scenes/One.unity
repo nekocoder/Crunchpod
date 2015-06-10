@@ -164,6 +164,7 @@ MonoBehaviour:
   - 0
   throttle: 0
   PC: {fileID: 400000, guid: b42cd27217f4f304f99467afd5fdc3fb, type: 2}
+  Enemy: {fileID: 400002, guid: ea882d168afc5e941b35a9353cdc1d95, type: 2}
   bottomPanel: {fileID: 0}
 --- !u!4 &825156539
 Transform:
@@ -308,6 +309,10 @@ Prefab:
       propertyPath: cursor2
       value: 
       objectReference: {fileID: 2800000, guid: 8949d5ea4e9813142a7eb5a4d34880b8, type: 3}
+    - target: {fileID: 11400000, guid: 35a7601545ae3234383e84576ab4747d, type: 2}
+      propertyPath: Enemy
+      value: 
+      objectReference: {fileID: 400002, guid: ea882d168afc5e941b35a9353cdc1d95, type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 35a7601545ae3234383e84576ab4747d, type: 2}
   m_RootGameObject: {fileID: 825156534}

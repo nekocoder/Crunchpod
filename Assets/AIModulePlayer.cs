@@ -4,11 +4,7 @@ using System.Collections;
 public class AIModulePlayer : MonoBehaviour 
 {
 	//variable
-		public float[] speed=new float[2];		//movement speed
-		public bool seeking;					//Should the player be moving?
-		public Vector3 target= new Vector3();	//Position to move to 
-		public float[] limits = new float[4];	//Space player is allowed to move within
-		public float[] rotation = new float[3];	//angle rotated, x component of forward vector, y component of forward vector
+		
 
 	// Use this for initialization
 	void Start () 
@@ -18,37 +14,27 @@ public class AIModulePlayer : MonoBehaviour
 
 	public void reset()
 	{
-		speed [0] = (float)1;
-		speed [1] = (float)1;
+		this.GetComponent<LogicUnit>().speed [0] = (float)1;
+		this.GetComponent<LogicUnit>().speed [1] = (float)1;
 		
-		rotation[0] = 0;
-		rotation[1] = 1;
-		rotation[2] = 0;
+		this.GetComponent<LogicUnit>().invincibilityFrames[0]=0;
+		this.GetComponent<LogicUnit>().invincibilityFrames[1]=5;
+		
+		this.GetComponent<LogicUnit>().HP[0]=100;
+		this.GetComponent<LogicUnit>().HP[1]=100;		
+		
+		this.GetComponent<LogicUnit>().ATK=20;
+		
+		this.GetComponent<LogicUnit>().rotations[0] = 0;
+		this.GetComponent<LogicUnit>().rotations[1] = 1;
+		this.GetComponent<LogicUnit>().rotations[2] = 0;
 
-		seeking = false;
-
-		target = new Vector3 (this.rigidbody2D.transform.position.x ,
+		this.GetComponent<LogicUnit>().target = new Vector3 (this.rigidbody2D.transform.position.x ,
 		                      this.rigidbody2D.transform.position.y,
-		                      this.rigidbody2D.transform.position.z);
-
-
-		/*
-		limits [0] = -1 * GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().rect.width * GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().orthographicSize;
-		limits [1] = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().rect.width * GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().orthographicSize;
-		limits [2] = -1 * GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().rect.height * GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().orthographicSize;
-		limits [3] = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().rect.height * GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().orthographicSize;	
-		*/
-
-		limits = GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().Bounds;
-
-		//Screen: from [0,0] to [Screen.width, Screen.height]
-		//Viewport: from [0,0] to [1,1]
-
-		//print ("Camera: "+GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().rect.height+".."+GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().rect.width+".."+GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().orthographicSize);
-		//print ("Screen: " + Screen.height + "......" + Screen.height);
-		//print ("limits: " + limits[0]+"...."+ limits[1]+"...."+ limits[2]+"...."+ limits[3]);
-		//print (GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().ViewportToScreenPoint (target));
-		//print ("Far clipping plane: "+GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera> ().
+							  this.rigidbody2D.transform.position.z);
+							  
+		this.GetComponent<LogicUnit>().limits = GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().Bounds;
+		
 	}
 
 	// Update is called once per frame
@@ -57,8 +43,7 @@ public class AIModulePlayer : MonoBehaviour
 		checkInput ();
 		createCoordinates ();
 		createForwardVector();
-		checkBoundaries ();
-	
+
 		//debug output statements
 			//print("AIModulePlayer update");
 	}
@@ -68,15 +53,16 @@ public class AIModulePlayer : MonoBehaviour
 		//set seeking to true if the thumbstick is not at defualt position. Set false otherwise
 			if (Input.GetAxis ("Horizontal") != 0 || Input.GetAxis ("Vertical") != 0) 
 			{
-				seeking=true;
+				this.GetComponent<LogicUnit>().seeking=true;
+				
 			}
 			else
 			{
-				seeking=false;
+				this.GetComponent<LogicUnit>().seeking=false;
 			}
-			
+						
 		//debug output statements
-			//print("Intput:  H: "+Input.GetAxis ("Horizontal")+" V: "+Input.GetAxis ("Vertical")+" Seeking: "+seeking);
+			//print("Intput:  H: "+Input.GetAxis ("Horizontal")+" V: "+Input.GetAxis ("Vertical")+" Seeking: "+this.GetComponent<LogicUnit>.seeking);
 	}
 	
 	void createForwardVector()
@@ -85,7 +71,7 @@ public class AIModulePlayer : MonoBehaviour
 			Animator animator= GetComponent<Animator>();
 		
 		//Don't bother with calculating and changing rotation if the thumbstick isn't being moved		
-			if(seeking)
+			if(this.GetComponent<LogicUnit>().seeking)
 			{
 				float[] jsp = new float[4]; //joyStickPositions
 				jsp [0] = Input.GetAxis ("Horizontal");
@@ -108,10 +94,10 @@ public class AIModulePlayer : MonoBehaviour
 					}
 				
 				//document rotation and slope
-					rotation[0]= theta;
-					rotation[1]= jsp[0];
-					rotation[2]= jsp[1];
-					
+					this.GetComponent<LogicUnit>().rotations[0]= theta;
+					this.GetComponent<LogicUnit>().rotations[1]= jsp[0];
+					this.GetComponent<LogicUnit>().rotations[2]= jsp[1];
+				
 				//Debug Output Statements	
 					//print ("distiled: "+jsp[0]+"/"+jsp[1]+"/"+jsp[2]+"/"+jsp[3]);
 					//print ("rotations: "+rotations[0]+"..."+rotations[1]);
@@ -120,43 +106,66 @@ public class AIModulePlayer : MonoBehaviour
 					//print("Rotation: "+theta);				
 			}
 			
-			//Change booster flag in animator
-				animator.SetBool("Boosters",seeking);			
+			//Change booster flag in animator, but only if the game is active (not during menus)
+				bool game=(GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game");
+					
+				animator.SetBool("Boosters",this.GetComponent<LogicUnit>().seeking && game);			
 		
 	}
 	
 	void createCoordinates()
 	{
-		target = new Vector3 (this.rigidbody2D.transform.position.x + (speed [0]*Input.GetAxis("Horizontal")),
-		                      this.rigidbody2D.transform.position.y - (speed [1]*Input.GetAxis("Vertical")),
-		                      this.rigidbody2D.transform.position.z);
+		//set new target 
+			this.GetComponent<LogicUnit>().target = new Vector3 (
+							this.rigidbody2D.transform.position.x + 
+							(this.GetComponent<LogicUnit>().speed [0]*Input.GetAxis("Horizontal")),
+		                    this.rigidbody2D.transform.position.y - 
+							(this.GetComponent<LogicUnit>().speed [1]*Input.GetAxis("Vertical")),
+		                    this.rigidbody2D.transform.position.z);
+		
+		//debug output
+			//print("NEW TARGET");
 	}	
-	void checkBoundaries()
+		
+	void OnTriggerEnter2D(Collider2D col)
 	{
-		//check to make sure we're not out of bounds
-		if (target[0] < limits [0]) 
-		{
-			//print ("negative X");
-			target.Set (limits [0], target.y, target.z);
-			//change = true;
-		}
-		if (target[0] > limits [1]) 
-		{
-			//print ("positive X");
-			target.Set (limits [1], target.y, target.z);
-			//change=true;
-		}
-		if (target[1] < limits [2]) 
-		{
-			//print ("negative Y");
-			target.Set (target.x, limits[2], target.z);
-			//change=true;
-		}
-		if (target[1] > limits [3]) 
-		{
-			//print ("Positive Y");
-			target.Set (target.x, limits [3], target.z);
-			//change=true;
-		}		
+		//check if invincibility frames are still running
+			if(this.GetComponent<LogicUnit>().invincibilityFrames[0]==0)
+			{
+				//Grab animator object
+					Animator animator= GetComponent<Animator>();
+					
+				//set hurt flag
+					animator.SetBool("Hurt",true);
+					
+				//reset invincibilityFrames
+					this.GetComponent<LogicUnit>().invincibilityFrames[0]=this.GetComponent<LogicUnit>().invincibilityFrames[1];
+			}
+		
+		//debug output
+			print("-FIRST TRIGGER ");
 	}
+	void OnTriggerStay2D(Collider2D col)
+	{
+		//check if invincibility frames are still running
+			if(this.GetComponent<LogicUnit>().invincibilityFrames[0]==0)
+				{
+					//Grab animator object
+						Animator animator= GetComponent<Animator>();
+						
+					//set hurt flag
+						animator.SetBool("Hurt",true);
+						
+					//reset invincibilityFrames
+						this.GetComponent<LogicUnit>().invincibilityFrames[0]=this.GetComponent<LogicUnit>().invincibilityFrames[1];
+				}			
+		
+		//debug output
+			print("-CONTINUAL TRIGGER");
+	}
+	void OnTriggerExit2D(Collider2D col)
+	{
+		//debug output
+			//print("-EXIT TRIGGER");
+	}	
 }
