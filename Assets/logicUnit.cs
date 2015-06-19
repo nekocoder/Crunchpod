@@ -38,19 +38,7 @@ public class LogicUnit : MonoBehaviour {
 		speed [1] = (float)1;		
 	}
 //Update methods
-	// Update is called once per frame
-	public void act()
-	{
-		if (GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game") 
-		{
-			//update rotations
-				UpdateRotation ();
-			//check for and fix boundary collisions
-				checkBoundaries();
-			//update position
-				move ();
-		}
-	}
+	// Update is called once per frame	
 	void Update () 
 	{
 		if (GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game") 
@@ -65,9 +53,6 @@ public class LogicUnit : MonoBehaviour {
 				checkBoundaries();
 			//update position
 				move ();
-			//update counters
-				cooldown();
-				
 				
 			//check status
 				//print("Chomp: "+Input.GetKey ("joystick button 0"));
@@ -85,7 +70,15 @@ public class LogicUnit : MonoBehaviour {
 	//called before physics calculations
 	void FixedUpdate()
 	{
-
+		if (GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game") 
+		{
+			//update rotations
+				UpdateRotation ();
+			//check for and fix boundary collisions
+				checkBoundaries();
+			//update position
+				move ();
+		}
 	}
 //calculation methods
 	void UpdateRotation()
@@ -114,7 +107,7 @@ public class LogicUnit : MonoBehaviour {
 				this.rigidbody2D.MovePosition(target);
 
 			//debug output
-				//print("MOVIN'!");
+				//print(this+" MOVIN'!");
 				
 		} else 
 		{
@@ -156,18 +149,4 @@ public class LogicUnit : MonoBehaviour {
 			//print("Checking Boundaries");
 	}
 
-//Cooldown
-	void cooldown()
-	{
-		//invincibility frames
-			if(invincibilityFrames[0]>0)
-			{
-				invincibilityFrames[0]--;
-			}
-			else
-			{
-				
-			}
-				
-	}
 }

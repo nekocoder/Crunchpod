@@ -18,7 +18,7 @@ public class AIModulePlayer : MonoBehaviour
 		this.GetComponent<LogicUnit>().speed [1] = (float)1;
 		
 		this.GetComponent<LogicUnit>().invincibilityFrames[0]=0;
-		this.GetComponent<LogicUnit>().invincibilityFrames[1]=5;
+		this.GetComponent<LogicUnit>().invincibilityFrames[1]=100;
 		
 		this.GetComponent<LogicUnit>().HP[0]=100;
 		this.GetComponent<LogicUnit>().HP[1]=100;		
@@ -40,10 +40,15 @@ public class AIModulePlayer : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
 	{
-		checkInput ();
-		createCoordinates ();
-		createForwardVector();
+		if (GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game") 
+		{
+			checkInput ();
+			createCoordinates ();
+			createForwardVector();
 
+			//update counters
+				cooldown();
+		}
 		//debug output statements
 			//print("AIModulePlayer update");
 	}
@@ -130,7 +135,7 @@ public class AIModulePlayer : MonoBehaviour
 	void OnTriggerEnter2D(Collider2D col)
 	{
 		//check if invincibility frames are still running
-			if(this.GetComponent<LogicUnit>().invincibilityFrames[0]==0)
+			if(this.GetComponent<LogicUnit>().invincibilityFrames[0]==0&& GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game")
 			{
 				//Grab animator object
 					Animator animator= GetComponent<Animator>();
@@ -140,32 +145,63 @@ public class AIModulePlayer : MonoBehaviour
 					
 				//reset invincibilityFrames
 					this.GetComponent<LogicUnit>().invincibilityFrames[0]=this.GetComponent<LogicUnit>().invincibilityFrames[1];
+				
+				//Debug output
+					//print("FIRST HIT!");
 			}
-		
+			else
+			{
+				//Debug output
+					//print("INVINCIBILITY FRAME: ["+this.GetComponent<LogicUnit>().invincibilityFrames[0]+"/"+this.GetComponent<LogicUnit>().invincibilityFrames[1]+"]");
+			}
+			
 		//debug output
-			print("-FIRST TRIGGER ");
+			//print("-FIRST TRIGGER ");
 	}
 	void OnTriggerStay2D(Collider2D col)
 	{
 		//check if invincibility frames are still running
-			if(this.GetComponent<LogicUnit>().invincibilityFrames[0]==0)
-				{
-					//Grab animator object
-						Animator animator= GetComponent<Animator>();
-						
-					//set hurt flag
-						animator.SetBool("Hurt",true);
-						
-					//reset invincibilityFrames
-						this.GetComponent<LogicUnit>().invincibilityFrames[0]=this.GetComponent<LogicUnit>().invincibilityFrames[1];
-				}			
+			if(this.GetComponent<LogicUnit>().invincibilityFrames[0]==0&&GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game")
+			{
+				//Grab animator object
+					Animator animator= GetComponent<Animator>();
+					
+				//set hurt flag
+					animator.SetBool("Hurt",true);
+					
+				//reset invincibilityFrames
+					this.GetComponent<LogicUnit>().invincibilityFrames[0]=this.GetComponent<LogicUnit>().invincibilityFrames[1];
+					
+				//debug output
+					//print("MORE HITS!");
+			}
+			else
+			{
+				//Debug output
+					//print("INVINCIBILITY FRAME: ["+this.GetComponent<LogicUnit>().invincibilityFrames[0]+"/"+this.GetComponent<LogicUnit>().invincibilityFrames[1]+"]");
+			}
 		
 		//debug output
-			print("-CONTINUAL TRIGGER");
+			//print("-CONTINUAL TRIGGER");
 	}
 	void OnTriggerExit2D(Collider2D col)
 	{
 		//debug output
 			//print("-EXIT TRIGGER");
 	}	
+
+	//Cooldown
+	void cooldown()
+	{
+		//invincibility frames
+			if(this.GetComponent<LogicUnit>().invincibilityFrames[0]>0)
+			{
+				this.GetComponent<LogicUnit>().invincibilityFrames[0]--;
+			}
+			else
+			{
+				
+			}
+				
+	}
 }
