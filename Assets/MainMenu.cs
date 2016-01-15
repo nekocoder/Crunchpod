@@ -20,7 +20,7 @@ public class MainMenu : MonoBehaviour {
 	void Start () 
 	{
 		status = "inactive";
-		DefThrottle=25;
+		DefThrottle=75;
 		throttle=0;
 		choice=1;
 		

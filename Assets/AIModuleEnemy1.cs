@@ -4,8 +4,11 @@ using System.Collections;
 public class AIModuleEnemy1 : MonoBehaviour
 {
 	//variable
-		Vector3 goal;
-
+		Vector3 goal; 	//pos to move to
+		int[] cannon= new int[2];	//affects fire rate [frame counter,frames between firing]
+		public Transform shot; //bullet
+		
+		
 	// Use this for initialization
 	void Start () 
 	{
@@ -14,8 +17,8 @@ public class AIModuleEnemy1 : MonoBehaviour
 	
 	public void reset()
 	{
-		this.GetComponent<LogicUnit>().speed [0] = (float)1;
-		this.GetComponent<LogicUnit>().speed [1] = (float)1;
+		this.GetComponent<LogicUnit>().speed [0] = (float).25;
+		this.GetComponent<LogicUnit>().speed [1] = (float).25;
 		
 		this.GetComponent<LogicUnit>().seeking=true;
 		
@@ -31,13 +34,17 @@ public class AIModuleEnemy1 : MonoBehaviour
 		
 		this.GetComponent<LogicUnit>().ATK=20;
 
-		this.GetComponent<LogicUnit>().target = new Vector3 (this.rigidbody2D.transform.position.x ,
-		                      this.rigidbody2D.transform.position.y,
-							  this.rigidbody2D.transform.position.z);
+		this.GetComponent<LogicUnit>().target = new Vector3 (this.GetComponent<Rigidbody2D>().transform.position.x ,
+		                      this.GetComponent<Rigidbody2D>().transform.position.y,
+							  this.GetComponent<Rigidbody2D>().transform.position.z);
 							  
 		this.GetComponent<LogicUnit>().limits = GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().Bounds;
 		
 		PrepGoal();
+		
+		//Cannon will fire once every X frames
+			cannon[0]=0;
+			cannon[1]=100;
 		
 		//goal =new Vector3( 100,100,1);
 		//check that goal is within game area
@@ -47,20 +54,28 @@ public class AIModuleEnemy1 : MonoBehaviour
 	}
 	public void Update()
 	{
-		//Random Target
-			Behavour1();
-		
-		//Rotation
-			
+		//print("Pos: "+this.GetComponent<Transform>().position);
 	}
 	public void FixedUpdate()
 	{
-		
+		if (GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game") 
+		{
+			//Random Target
+				Behavour1();
+			
+			//Rotation
+					
+			//test
+				//print("ENEMY IS DOING STUFF (or should be)");
+		}
 	}
+	
 	void Behavour1()	
 	{
 		//debug output
 			//print("Arrived?: "+(this.rigidbody2D.transform.position==this.GetComponent<LogicUnit>().target));
+			//print("--running Mook1 behaviour");
+			
 		/*
 		Tier 1 mook
 		-------------
@@ -75,13 +90,16 @@ public class AIModuleEnemy1 : MonoBehaviour
 			CalcNextStep();
 		//Update Rotation	
 			CalcRotation();
-		//Check cannon
-		
-		//Fire if necessary
+		//Check cannon and fire if necessary
+			CheckCannon();
+		//cooldowns
+			Cooldown();
 		
 	}
 	void CheckGoalStatus()	
 	{
+		//print("---Checking progression towards goal");
+		
 		/*
 		Check if character is at goal
 		[y]assign new goal
@@ -91,7 +109,7 @@ public class AIModuleEnemy1 : MonoBehaviour
 		*/
 		
 		//Have we reached the goal
-		if(this.rigidbody2D.transform.position==goal&& GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game")
+		if(this.GetComponent<Rigidbody2D>().transform.position==goal&& GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game")
 		{
 			//Will generate a new goal and set speed accordingly
 				PrepGoal();
@@ -102,7 +120,7 @@ public class AIModuleEnemy1 : MonoBehaviour
 				//print("----------------------------");
 				//print("NO NEW TARGET");
 				//print(">>>Position: "+this.rigidbody2D.transform.position);
-				//print(">>>Target:   "+this.GetComponent<LogicUnit>().target[0]+"-"+this.GetComponent<LogicUnit>().target[1]+"-"+this.GetComponent<LogicUnit>().target[2]);
+				//print(">>>Target:   "+this.GetComponent<LogicUnit>().MainMachine0]+"-"+this.GetComponent<LogicUnit>().MainMachine1]+"-"+this.GetComponent<LogicUnit>().MainMachine2]);
 				//print(">>>Goal:    "+goal[0]+"-"+goal[1]);
 				//print(">>>Speed:   "+this.GetComponent<LogicUnit>().speed[0]+"-"+this.GetComponent<LogicUnit>().speed[1]);
 		}
@@ -117,13 +135,16 @@ public class AIModuleEnemy1 : MonoBehaviour
 		*/
 		
 		//assign new goal
-			goal= new Vector3 (	Random.Range(this.GetComponent<LogicUnit>().limits[0],this.GetComponent<LogicUnit>().limits[1]),Random.Range(this.GetComponent<LogicUnit>().limits[2],this.GetComponent<LogicUnit>().limits[3]),this.rigidbody2D.transform.position.z);
+			goal= new Vector3 (	Random.Range(this.GetComponent<LogicUnit>().limits[0],this.GetComponent<LogicUnit>().limits[1]),Random.Range(this.GetComponent<LogicUnit>().limits[2],this.GetComponent<LogicUnit>().limits[3]),this.GetComponent<Rigidbody2D>().transform.position.z);
 			
 		//check that goal is within game area
 			CheckGoalIntegrity();
 			
+		//Set Goal
+			//this.GetComponent<LogicUnit>().target=goal;
+		
 		//Debug Output
-			//print("NEW TARGET: "+this.GetComponent<LogicUnit>().target);
+			//print("---ACQUIRING TARGET: "+this.GetComponent<LogicUnit>().target);
 			
 	}
 	void CalcNextStep()
@@ -144,17 +165,46 @@ public class AIModuleEnemy1 : MonoBehaviour
 			this.GetComponent<LogicUnit>().speed[0]=distance[0];
 			this.GetComponent<LogicUnit>().speed[1]=distance[1];		
 		
-		this.GetComponent<LogicUnit>().target = new Vector3(
-			this.rigidbody2D.transform.position.x + this.GetComponent<LogicUnit>().speed [0],
-			this.rigidbody2D.transform.position.y + this.GetComponent<LogicUnit>().speed [1], 
-			this.rigidbody2D.transform.position.z);
+			this.GetComponent<LogicUnit>().target = new Vector3(
+			this.GetComponent<Rigidbody2D>().transform.position.x + this.GetComponent<LogicUnit>().speed [0],
+			this.GetComponent<Rigidbody2D>().transform.position.y + this.GetComponent<LogicUnit>().speed [1], 
+			this.GetComponent<Rigidbody2D>().transform.position.z);
 			
 		//Debug Output
-			//print("Distance: "+distance[0]+"-"+distance[1]);
+			//print("---GOING THE DISTANCE"+distance[0]+"-"+distance[1]);
 	}
 	void CalcRotation()
 	{
-		this.GetComponent<LogicUnit>().rotations[0]=this.rigidbody2D.rotation+1;
+		this.GetComponent<LogicUnit>().rotations[0]=this.GetComponent<Rigidbody2D>().rotation+1;
+		
+		//print("---");
+	}
+	void CheckCannon()
+	{
+		if(cannon[0]==cannon[1])
+		{
+			//spawn shot
+				 Instantiate (shot, this.GetComponent<Rigidbody2D>().position, this.GetComponent<Transform>().rotation);
+				
+				//bullet.GetComponent<LogicUnit>().rotations=this.GetComponent<LogicUnit>().rotations;
+				
+				//Instantiate (shot, new Vector3(0,0,0), Quaternion.identity);
+				
+				//bullet.GetComponent<AIModuleShot>().target=this.GetComponent<Transform>().position;
+				
+				//Instantiate (shot, this.GetComponent<LogicUnit>().target, Quaternion.identity);
+				
+			//reset counter
+				cannon[0]=0;
+		}
+		
+	}
+	void Cooldown()
+	{
+		if(cannon[0]<cannon[1])
+		{
+			cannon[0]++;
+		}
 	}
 	
 	//Make sure goal isn't outside the bounds of the game area
@@ -188,7 +238,7 @@ public class AIModuleEnemy1 : MonoBehaviour
 
 		//debug output
 			//print("Bounds: "+this.GetComponent<LogicUnit>().limits[0]+" "+this.GetComponent<LogicUnit>().limits[1]+" "+this.GetComponent<LogicUnit>().limits[2]+" "+this.GetComponent<LogicUnit>().limits[3]);
-			//print("Target: "+this.GetComponent<LogicUnit>().target[0]+" "+this.GetComponent<LogicUnit>().target[1]);
+			//print("Target: "+this.GetComponent<LogicUnit>().MainMachine0]+" "+this.GetComponent<LogicUnit>().MainMachine1]);
 			//print("Checking Boundaries");
 	}
 	

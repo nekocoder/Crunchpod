@@ -27,15 +27,17 @@ public class Protocol : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
 	{
-		Bounds [0] = Camera.main.ViewportToWorldPoint(new Vector3(0,0,0)).x;
-		Bounds [1] = Camera.main.ViewportToWorldPoint(new Vector3(1,-1,0)).x;
-		Bounds [2] = Camera.main.ViewportToWorldPoint(new Vector3(0,0,0)).y;
-		Bounds [3] = Camera.main.ViewportToWorldPoint (new Vector3 (-1, 1, 0)).y;
+		//Sets bounds at camera viewable area
+			Bounds [0] = Camera.main.ViewportToWorldPoint(new Vector3(0,0,0)).x;
+			Bounds [1] = Camera.main.ViewportToWorldPoint(new Vector3(1,-1,0)).x;
+			Bounds [2] = Camera.main.ViewportToWorldPoint(new Vector3(0,0,0)).y;
+			Bounds [3] = Camera.main.ViewportToWorldPoint(new Vector3 (-1, 1, 0)).y;
 
 		actionStack.Add("TitleScreen");		
 		throttle=100;
 		//print (actionStack [0]);
 		//print (actionStack [1]);
+		
 	}
 	
 	// Update is called once per frame
@@ -90,6 +92,11 @@ public class Protocol : MonoBehaviour {
 					this.GetComponent<PauseMenu> ().HitDaSwitches();
 					state="menu";
 					break;
+				case "GameOver":
+					//print("---------START game over");
+					this.GetComponent<GameOver> ().HitDaSwitches();
+					state="menu";
+					break;
 				case "fresh":
 					state="freshGame";
 					break;
@@ -131,7 +138,8 @@ public class Protocol : MonoBehaviour {
 	{
 		//Instantiate(brick, Vector3 (x, y, 0), Quaternion.identity);
 			Instantiate (PC, new Vector3 (0, 0, 0), Quaternion.identity);
-			Instantiate (Enemy, new Vector3 (25, 0, 0), Quaternion.identity);
+			Instantiate (Enemy, new Vector3 (0, 0, 0), Quaternion.identity);
+			//Instantiate (Enemy.GetComponent<AIModuleEnemy1>().shot,new Vector3 (25, 0, 0), Quaternion.identity);
 		
 		//add a message asking for a fresh game
 			addMessage("fresh");
@@ -148,5 +156,13 @@ public class Protocol : MonoBehaviour {
 	public string getState()
 	{
 		return state;
+	}
+	
+	public void ViewStatus()
+	{
+		print("*************GLOBAL STATS***********");
+		print("Bounds: "+Bounds[0]+"|"+Bounds[1]+"|"+Bounds[2]+"|"+Bounds[3]);		
+		print("************************************");
+		
 	}
 }

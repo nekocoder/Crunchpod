@@ -5,9 +5,9 @@ Tentative/Reoccuring
 	[x]Verify resetting game (start game then quit to main menu)
 	[x]Verify application closing
 Major Errors
-	[]IsFinite(outDistanceForSort)
-	[]IsFinite(outDistanceAlongView)
-	[]aabb.IsInvalid()
+	[x]IsFinite(outDistanceForSort)
+	[x]IsFinite(outDistanceAlongView)
+	[x]aabb.IsInvalid()
 	[x]Stop booster animation when paused
 Misc
 	[x]Subversion
@@ -16,10 +16,12 @@ Misc
 	[]menus
 	[]UI
 	[]Blog Post
+	[]AI
+	[]fire
 Animations
 	[x]Booster
-	[]Hurt
+	[x]Hurt
 	[]Chain
 	[]Chomp
 Player Movement
-	[]Speed
+	[x]Speed

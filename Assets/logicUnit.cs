@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+
+
 public class LogicUnit : MonoBehaviour {
 
 	//variables
@@ -19,7 +21,7 @@ public class LogicUnit : MonoBehaviour {
 			public int ATK;
 	
 	// Use this for initialization
-	void Start () 
+	void Awake() 
 	{
 		//reset or initialize variables
 			reset ();
@@ -40,47 +42,50 @@ public class LogicUnit : MonoBehaviour {
 //Update methods
 	// Update is called once per frame	
 	void Update () 
-	{
-		if (GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game") 
-		{
-			//print("-we're a go");
-			
-			//update variables
-
-			//update rotations
-				UpdateRotation ();
-			//check for and fix boundary collisions
-				checkBoundaries();
-			//update position
-				move ();
-				
-			//check status
-				//print("Chomp: "+Input.GetKey ("joystick button 0"));
-				//print ("Movement:  [" + Input.GetAxis ("Horizontal")+"/"+ Input.GetAxis ("Vertical")+"]");
-				//print ("Movement:  [" + Input.GetAxisRaw ("Horizontal")+"/"+ Input.GetAxisRaw ("Vertical")+"]");
-				//print ("Targeting: [" + Input.GetAxis ("Target Horizontal") +"/" + Input.GetAxis ("Target Vertical")+"]");
-				//print ("Targeting: [" + Input.GetAxisRaw ("Target Horizontal") +"/" + Input.GetAxisRaw ("Target Vertical")+"]");
-				//print ("Rotations: [" + rotations [0] + "/" + rotations [1] + "]");
-		}
-		else
-		{
-			//print("-hanging tight");
-		}
+	{				
+		//check status
+			//print("Chomp: "+Input.GetKey ("joystick button 0"));
+			//print ("Movement:  [" + Input.GetAxis ("Horizontal")+"/"+ Input.GetAxis ("Vertical")+"]");
+			//print ("Movement:  [" + Input.GetAxisRaw ("Horizontal")+"/"+ Input.GetAxisRaw ("Vertical")+"]");
+			//print ("Targeting: [" + Input.GetAxis ("Target Horizontal") +"/" + Input.GetAxis ("Target Vertical")+"]");
+			//print ("Targeting: [" + Input.GetAxisRaw ("Target Horizontal") +"/" + Input.GetAxisRaw ("Target Vertical")+"]");
+			//print ("Rotations: [" + rotations [0] + "/" + rotations [1] + "]");	
 	}
 	//called before physics calculations
 	void FixedUpdate()
 	{
 		if (GameObject.FindGameObjectWithTag ("GroundControl").GetComponent<Protocol> ().getState()=="game") 
 		{
+			//Test
+				//print("-we're a go");
 			//update rotations
 				UpdateRotation ();
 			//check for and fix boundary collisions
 				checkBoundaries();
 			//update position
 				move ();
+							
+			//Test
+				//ViewStatus();
 		}
+		else
+		{
+			//print("-hanging tight");
+		}
+		
+		//Test			
+			//print("Chomp: "+Input.GetKey ("joystick button 0"));
+			//print ("Movement:  [" + Input.GetAxis ("Horizontal")+"/"+ Input.GetAxis ("Vertical")+"]");
+			//print ("Movement:  [" + Input.GetAxisRaw ("Horizontal")+"/"+ Input.GetAxisRaw ("Vertical")+"]");
+			//print ("Targeting: [" + Input.GetAxis ("Target Horizontal") +"/" + Input.GetAxis ("Target Vertical")+"]");
+			//print ("Targeting: [" + Input.GetAxisRaw ("Target Horizontal") +"/" + Input.GetAxisRaw ("Target Vertical")+"]");
+			//print ("Rotations: [" + rotations [0] + "/" + rotations [1] + "]");	
+		
 	}
 //calculation methods
+
+
+//modification methods
 	void UpdateRotation()
 	{
 		//check to see if the PC is even trying to move. 
@@ -91,11 +96,13 @@ public class LogicUnit : MonoBehaviour {
 			if(seeking)
 			{
 				//move the object
-				this.rigidbody2D.MoveRotation(rotations[0]);	
-			}
+					this.GetComponent<Rigidbody2D>().MoveRotation(rotations[0]);
+				
+				//test
+					//print("--Rotation "+rotations[0]);
+			}		
+		
 	}
-
-//modification methods
 	void move()
 	{
 
@@ -104,12 +111,13 @@ public class LogicUnit : MonoBehaviour {
 		if (seeking)
 		{
 			//move the object
-				this.rigidbody2D.MovePosition(target);
-
+				this.GetComponent<Rigidbody2D>().MovePosition(target);
+				
 			//debug output
 				//print(this+" MOVIN'!");
 				
-		} else 
+		} 
+		else 
 		{
 			
 		}
@@ -148,5 +156,47 @@ public class LogicUnit : MonoBehaviour {
 			//print("Target: "+target[0]+" "+target[1]);
 			//print("Checking Boundaries");
 	}
-
+	public void ChangeStatus(char stat, int amt)
+	{
+		switch(stat)
+		{
+			case 'h':
+				//alter health
+					HP[0]+=amt;
+				
+				//cap health if too high
+					if(HP[0]>HP[1])
+					{
+						//assign max health
+							HP[0]=HP[1];
+					}
+				
+				//lover lives if health is depleted
+					if(HP[0]<0 && HP[2]>0)
+					{
+						//reset health
+							HP[0]=HP[1];
+					
+						//lower lives
+							HP[2]--;
+					}
+				break;
+			default:
+			break;		
+		}
+			
+	}
+	
+//Info methods
+	public void ViewStatus()
+	{
+		print("************************************");
+		print("Rotation: "+this.GetComponent<Rigidbody2D>().rotation);		
+		print("Position: "+this.GetComponent<Rigidbody2D>().position);
+		print("Speed:    "+speed[0]+"|"+speed[1]);
+		print("Target:   "+target[0]+"|"+target[1]+"|"+target[3]);
+		print("************************************");
+		
+	}
+	
 }
